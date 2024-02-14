@@ -86,8 +86,10 @@ namespace pi.AnimatorAsVisual
 
                     var newMin = blend.StateOff;
                     var newMax = blend.StateOn;
-                    EditorGUI.MinMaxSlider(new Rect(rect.x, rect.y + 3 + EditorGUIUtility.singleLineHeight, rect.width, EditorGUIUtility.singleLineHeight),
-                        new GUIContent("Range", "The useable range of this blend shape. The 0-1 value of the slider will be remapped to this region between 0-100. For example, if you put the left element at half way and the right one to the end, the final slider on the avatar will turn the blendshape from 50 to 100."),
+                    newMin = EditorGUI.FloatField(new Rect(rect.x, rect.y + 3 + EditorGUIUtility.singleLineHeight, rect.width / 20, EditorGUIUtility.singleLineHeight), newMin);
+                    newMax = EditorGUI.FloatField(new Rect(rect.x + rect.width - rect.width / 18, rect.y + 3 + EditorGUIUtility.singleLineHeight, rect.width / 20, EditorGUIUtility.singleLineHeight), newMax);
+                    EditorGUI.MinMaxSlider(new Rect(rect.x + 4 + rect.width / 20, rect.y + 3 + EditorGUIUtility.singleLineHeight, rect.width - (rect.width / 8), EditorGUIUtility.singleLineHeight),
+                        new GUIContent("", "The useable range of this blend shape. The 0-1 value of the slider will be remapped to this region between 0-100. For example, if you put the left element at half way and the right one to the end, the final slider on the avatar will turn the blendshape from 50 to 100."),
                         ref newMin, ref newMax, 0, 100
                     );
                     blend.StateOff = blend.StateOff.UpdateWith(() => newMin, ref modified);
