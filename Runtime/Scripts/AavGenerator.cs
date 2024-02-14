@@ -10,6 +10,7 @@ using UnityEngine;
 using AnimatorAsCode.Pi.V0;
 using VRC.SDK3.Avatars.ScriptableObjects;
 using System;
+using JetBrains.Annotations;
 
 namespace pi.AnimatorAsVisual
 {
@@ -23,6 +24,17 @@ namespace pi.AnimatorAsVisual
         
         private readonly List<string> usedParams = new List<string>();
         private readonly List<(Motion on, Motion off, AacFlFloatParameter param)> blendTreeMotions = new List<(Motion on, Motion off, AacFlFloatParameter param)>();
+        
+        [CanBeNull]
+        public AnimatorController FxController
+        {
+            get
+            {
+                var avatar = AAV.Avatar;
+                if (avatar.baseAnimationLayers.Length < 3) return null;
+                return (AnimatorController)AAV.Avatar.baseAnimationLayers[4].animatorController;
+            }
+        }
 
         public int StatsBlendTreeMotions => blendTreeMotions.Count;
         public int StatsUsedParameters => usedParams.Count;
@@ -31,10 +43,6 @@ namespace pi.AnimatorAsVisual
 
         public string LastStatsSummary { get; private set; }
         public string RemotingString { get; private set; }
-
-        private static readonly HashSet<IAavGeneratorHook> hooks = new HashSet<IAavGeneratorHook>();
-        public static IEnumerable<IAavGeneratorHook> Hooks => hooks;
-        public static void RegisterHook(IAavGeneratorHook hook) => hooks.Add(hook);
 
         public AavGenerator(AnimatorAsVisual aav)
         {
@@ -122,8 +130,11 @@ namespace pi.AnimatorAsVisual
             MainFX.WithAvatarMaskNoTransforms(); // FIXME? make masks configurable?
 
             // call custom generation hooks
-            foreach (var hook in hooks)
+            foreach (var hook in AAV.Hooks)
+            {
+                if (hook == null) continue;
                 hook.PreApply(avatar.gameObject, this);
+            }
 
             // generate a layer for every entry
             foreach (var item in AAV.Root.EnumerateRecursive())
@@ -196,8 +207,11 @@ namespace pi.AnimatorAsVisual
             StatsLayers = fx.layers.Count(l => l.name.StartsWith("AAV") || l.name.StartsWith("RemoteAAV"));
 
             // call custom generation hooks
-            foreach (var hook in hooks)
+            foreach (var hook in AAV.Hooks)
+            {
+                if (hook == null) continue;
                 hook.Apply(avatar.gameObject, this);
+            }
 
             // generate Av3 menu
             var menu = AAV.Menu ?? avatar.expressionsMenu;

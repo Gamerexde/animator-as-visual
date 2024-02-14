@@ -1,12 +1,13 @@
 #if UNITY_EDITOR
 using UnityEngine;
+using VRC.SDKBase;
 
 namespace pi.AnimatorAsVisual
 {
-    public interface IAavGeneratorHook
+    public abstract class AavGeneratorHook : MonoBehaviour, IEditorOnly
     {
-        void PreApply(GameObject avatar, AavGenerator generator);
-        void Apply(GameObject avatar, AavGenerator generator);
+        public abstract void PreApply(GameObject avatar, AavGenerator generator);
+        public abstract void Apply(GameObject avatar, AavGenerator generator);
 
         string Name { get; }
     }

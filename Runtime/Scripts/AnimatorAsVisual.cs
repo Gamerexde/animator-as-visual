@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 
 using System;
 using UnityEngine;
@@ -27,6 +27,7 @@ namespace pi.AnimatorAsVisual
         [HideInInspector] public int CurrentlySelected = -1;
         [HideInInspector] public AavSubmenuItem CurrentMenu;
         [HideInInspector, NonSerialized] public VRCExpressionsMenu ImportFromMenu;
+        [ItemCanBeNull] public List<AavGeneratorHook> Hooks;
     }
 }
 
